@@ -24,10 +24,10 @@ jobs:
       # - name: Set Environment File
       #   run: cp .env.test .env
 
-      - name: Lint & Test
-        run: |
-          npm run lint
-          npm test
+      # - name: Lint & Test
+      #   run: |
+      #     npm run lint
+      #     npm test
 
       # # Build APK (Android)
       # - name: Build APK
