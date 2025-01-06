@@ -21,8 +21,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Set Environment File
-        run: cp .env.test .env
+      # - name: Set Environment File
+      #   run: cp .env.test .env
 
       - name: Lint & Test
         run: |
