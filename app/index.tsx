@@ -1,11 +1,9 @@
-import { Text, View } from "react-native";
-import "./global.css";
-export default function Index() {
-  return (
-    <View>
-      <View className="text-red-500 bg-slate-600">
-        Edit app/index.tsx to edit this screen.
-      </View>
-    </View>
-  );
-}
+import React from "react";
+import { View } from "react-native";
+import "../global.css";
+import { Redirect } from "expo-router";
+const Index: React.FC = () => {
+  return <Redirect href={"/(auth)/sign-in"} />;
+};
+
+export default Index;
