@@ -3,12 +3,11 @@ import { Tabs } from "expo-router";
 import HomeScreen from "./home";
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="home" />
-      <Tabs.Screen name="add" />
+      <Tabs.Screen name="history" />
       <Tabs.Screen name="tracking" />
       <Tabs.Screen name="settings" />
-      <Tabs.Screen name="home" />
     </Tabs>
   );
 }

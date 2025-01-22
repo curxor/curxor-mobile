@@ -1,8 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 
-const SettingsScreen = () => {
+const HistoryScreen = () => {
   return <View>HomeScreen</View>;
 };
 
-export default SettingsScreen;
+export default HistoryScreen;
