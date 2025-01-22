@@ -3,7 +3,7 @@ import "../global.css";
 
 import { Redirect } from "expo-router";
 const Index: React.FC = () => {
-  return <Redirect href={"/(tabs)/home"} />;
+  return <Redirect href={"/(auth)/verify"} />;
 };
 
 export default Index;
