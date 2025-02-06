@@ -28,8 +28,16 @@ const HomeScreen: React.FC = () => {
         <View className="flex-row justify-center">
           {!isLoadingUser && (
             <Fragment>
-              <Total name="Total Income" value={dataUser.income}></Total>
-              <Total name="Total Expensive" value={dataUser.expense}></Total>
+              <Total
+                icon="smile"
+                name="Total income this month"
+                value={dataUser.income}
+              ></Total>
+              <Total
+                icon="alert-circle"
+                name="Total expense this month"
+                value={dataUser.expense}
+              ></Total>
             </Fragment>
           )}
         </View>

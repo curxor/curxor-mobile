@@ -6,6 +6,8 @@ import { Image, TouchableOpacity, View, Text } from "react-native";
 import { useGetMessages, useSendMessage } from "@/hooks/conversation.hook";
 import { formatCurrency } from "@/utils/format-currency";
 import Transaction from "@/components/history/item";
+import ScanScreen from "@/components/button/send-image-with-ocr";
+import { useGetProfile } from "@/hooks/auth.hook";
 
 const renderSend = (props: any) => (
   <Send {...props}>
@@ -40,16 +42,16 @@ const ChatScreen: React.FC = () => {
   const [audioRecorder] = useState(new AudioRecorderPlayer());
   const [isBotTyping, setIsBotTyping] = useState(false);
   const { data } = useGetMessages();
+  const { data: dataUser } = useGetProfile();
   const { mutate } = useSendMessage();
 
   useEffect(() => {
-    if (data) {
+    if (data && dataUser) {
       setMessages(data.messages);
-      setCurrentUserID("679e43361fb620065b37a973");
-      console.log(data.conversation);
+      setCurrentUserID(dataUser.user._id);
       setConversationId(data.conversation);
     }
-  }, [data]);
+  }, [data, dataUser]);
 
   const renderMessage = (props: any) => {
     const { currentMessage } = props;
@@ -82,15 +84,19 @@ const ChatScreen: React.FC = () => {
       setIsBotTyping(true);
       const currentConversationId = conversationId;
       mutate(
-        { text: userMessage, conversationId: currentConversationId, botId:botUserID },
+        {
+          text: userMessage,
+          conversationId: currentConversationId,
+          botId: botUserID,
+        },
         {
           onSuccess: (data) => {
             const replyMessage: ICustomMessage = {
               _id: Math.random().toString(),
-              text: data.data.text || "Bot response",
+              text: data.text || "Bot response",
               createdAt: new Date(),
               user: { _id: botUserID, name: "Bot" },
-              transaction: data.data.transactions,
+              transaction: data.transactions,
             };
             setMessages((prevMessages) =>
               GiftedChat.append(prevMessages, [replyMessage])

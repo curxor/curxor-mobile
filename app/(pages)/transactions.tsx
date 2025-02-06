@@ -51,13 +51,11 @@ export default function Transactions() {
   useEffect(() => {
     if (dataCategories && dataTransaction) {
       setItems(dataCategories.data);
-      setData(dataTransaction);
+      setData(dataTransaction.data);
       setCategory(dataTransaction.category);
     }
   }, [dataCategories, dataTransaction]);
-  const onCategoryChange = (value: string) => {
-    setCategory(value);
-  };
+
   const onSubmit = () => {
     const validationResult = transactionSchema.safeParse({
       ...data,

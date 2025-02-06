@@ -27,13 +27,13 @@ const Input: React.FC<InputProps> = ({
   const dynamicKeyboardType = typeof value === "number" ? "numeric" : "default";
 
   return (
-    <View className={className}>
-      <Text>{title}</Text>
-      <View className="w-full border-[2px] pl-2 border-gray-200 flex-row items-center rounded-2xl h-12">
+    <View className={`mt-2 ${className}`}>
+      <Text className="text-sm font-semibold mb-1">{title}</Text>
+      <View className="w-full border-2 pl-2 border-gray-500 flex-row items-center rounded-lg h-12">
         {iconName && <Feather name={iconName} size={25} color="gray" />}
         <TextInput
           maxLength={length}
-          className={`w-full pl-2 focus:outline-none text-gray-400 ${className}`}
+          className={`w-full h-full mt-6 pl-1 focus:outline-none text-black ${className}`}
           onChangeText={(newText) => {
             const parsedValue =
               dynamicKeyboardType === "numeric"
