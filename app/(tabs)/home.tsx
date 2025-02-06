@@ -7,17 +7,8 @@ import React, { Fragment, useState } from "react";
 import { View, Text, ScrollView, SafeAreaView } from "react-native";
 
 const HomeScreen: React.FC = () => {
-  const [id, setId] = useState("");
-  const [isOpen, setIsOpen] = useState<number>(-1);
   const { data, isLoading } = useGetTransactions();
   const { data: dataUser, isLoading: isLoadingUser } = useGetProfile();
-  const openDetails = (id: string) => {
-    setId(id);
-    setIsOpen(0);
-  };
-  const closeDetails = () => {
-    setIsOpen(-1);
-  };
   return (
     <ScrollView className="bg-white">
       <SafeAreaView>
