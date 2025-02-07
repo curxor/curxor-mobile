@@ -11,6 +11,7 @@ import {
   useEditTransaction,
   useTransactionDetails,
 } from "@/hooks/transaction.hook";
+import Header from "@/components/header/header";
 
 const transactionSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -36,8 +37,10 @@ export default function Transactions() {
   const { _id } = useLocalSearchParams<{ _id: string }>();
   const { data: dataTransaction } = useTransactionDetails(_id);
   const { data: dataCategories, isLoading } = useGetCategories();
-  const { mutate } = useEditTransaction();
-  const [open, setOpen] = useState(false);
+  const { mutate, isPending } = useEditTransaction();
+  const [open, setOpen] = useState<boolean>(false);
+  const [icon, setIcon] = useState<string>("");
+
   const [data, setData] = useState<ITransaction>({
     description: "",
     amount: 0,
@@ -120,59 +123,67 @@ export default function Transactions() {
 
   return (
     <View className="bg-white h-full">
-      <View className="z-10">
-        <Toast></Toast>
-      </View>
-      <Input
-        title="Description"
-        className="mx-2 "
-        value={data.description}
-        onChangeText={(value) => {
-          setData((prevData) => ({
-            ...prevData,
-            description: value,
-          }));
-        }}
-      ></Input>
-      <Input
-        title="Amount"
-        className="mx-2"
-        value={String(data.amount)}
-        onChangeText={(value) => {
-          setData((prevData) => ({
-            ...prevData,
-            amount: value ? parseFloat(value) : 0,
-          }));
-        }}
-        keyboardType={"numeric"}
-      ></Input>
-      <View className="mx-2 z-10">
-        <Text className="mb-2">Category</Text>
-        {!isLoading && (
-          <DropDownPicker
-            loading={isLoading}
-            open={open}
-            value={category}
-            items={items.map((item) => ({
-              label: item.name,
-              value: item._id,
-            }))}
-            setOpen={setOpen}
-            setValue={(value) => setCategory(value)}
-            setItems={setItems}
-            searchable={true}
-            placeholder="Select a category"
-            searchPlaceholder="Search categories..."
-            style={styles.dropdown}
-            dropDownContainerStyle={styles.dropdownContainer}
+      <View className="max-w-[500px] w-full mx-auto">
+        <Header title="Transaction"></Header>
+
+        <View className="text-center mt-5 flex-row items-center bg-gray-100 text-8xl h-36 w-36 mx-auto rounded-full p-2">
+          <Text className="text-6xl mx-auto">🔥</Text>
+        </View>
+        <View className="z-10">
+          <Toast></Toast>
+        </View>
+        <Input
+          title="Description"
+          className="mx-2 "
+          value={data.description}
+          onChangeText={(value) => {
+            setData((prevData) => ({
+              ...prevData,
+              description: value,
+            }));
+          }}
+        ></Input>
+        <Input
+          title="Amount"
+          className="mx-2"
+          value={String(data.amount)}
+          onChangeText={(value) => {
+            setData((prevData) => ({
+              ...prevData,
+              amount: value ? parseFloat(value) : 0,
+            }));
+          }}
+          keyboardType={"numeric"}
+        ></Input>
+        <View className="mx-2 z-10">
+          <Text className="mb-2 font-semibold mt-2">Category</Text>
+          {!isLoading && (
+            <DropDownPicker
+              loading={isLoading}
+              open={open}
+              value={category}
+              items={items.map((item) => ({
+                label: item.name,
+                value: item._id,
+              }))}
+              setOpen={setOpen}
+              setValue={(value) => setCategory(value)}
+              setItems={setItems}
+              searchable={true}
+              placeholder="Select a category"
+              searchPlaceholder="Search categories..."
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+            />
+          )}
+          <Button
+            isLoading={isPending}
+            onPress={() => onSubmit()}
+            className="mt-4 w-[80%] mx-auto"
+            title="Save"
           />
-        )}
+        </View>
       </View>
-      <Button
-        onPress={() => onSubmit()}
-        className="mt-2 w-[80%] mx-auto"
-        title="Save"
-      />
     </View>
   );
 }

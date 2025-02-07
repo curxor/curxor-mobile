@@ -1,15 +1,16 @@
 import {
   editTransactionAPI,
   getTransactionDetailsAPI,
+  getTransactions,
   getTransactionsAPI,
   ITransaction,
 } from "@/apis/transaction.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const useGetTransactions = () => {
+export const useGetTransactions = (getTransactions: getTransactions) => {
   return useQuery({
-    queryKey: ["transactions"],
-    queryFn: () => getTransactionsAPI(),
+    queryKey: ["transactions", getTransactions],
+    queryFn: () => getTransactionsAPI(getTransactions),
   });
 };
 export const useTransactionDetails = (_id: string) => {

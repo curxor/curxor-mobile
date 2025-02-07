@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, Image, Alert } from "react-native";
+import { View, Text, SafeAreaView, TextInput, Keyboard } from "react-native";
 import { z } from "zod";
 import Input from "@/components/input/input";
 import Button from "@/components/button/button";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@/hooks/auth.hook";
+import LoginWith from "@/components/button/login-button";
+
 const emailSchema = z.string().email({ message: "Invalid email address" });
 
 const SignInScreen = () => {
   const [email, setEmail] = useState("");
-  const { mutate } = useSignIn();
+  const { mutate, isPending } = useSignIn();
   const router = useRouter();
+
   const onChange = (value: string) => {
     setEmail(value);
   };
@@ -25,8 +28,10 @@ const SignInScreen = () => {
           type: "error",
           text1: "Invalid email address",
         });
+        return;
       }
     }
+
     mutate(email, {
       onError: (e: any) => {
         Toast.show({
@@ -41,33 +46,43 @@ const SignInScreen = () => {
         });
       },
     });
-    console.log(email);
+
+    Keyboard.dismiss();
   };
 
   return (
-    <View className="p-2 bg-white h-full">
-      {/* <Image
-        source={{
-          uri: "https://wallet.pointer.io.vn/assets/auth_img-DqywpUJV.png",
-        }}
-        style={{ width: "100%", height: 100 }}
-      /> */}
-      <View className="z-10">
-        <Toast></Toast>
+    <SafeAreaView className="w-full bg-white h-full">
+      <View className="p-2 bg-white h-full mx-auto max-w-[500px] mt-24 w-full">
+        <View className="z-10">
+          <Toast />
+        </View>
+        <Text className="text-center z-0 text-4xl mt-5 font-semibold mb-5">
+          Curxor Tracking 🌊
+        </Text>
+        <Text className="text-center z-0 text-sm mt-5 font-semibold mb-5">
+          The best way to track your expenses with AI 🚀
+        </Text>
+        <View className="space-y-10">
+          <Input
+            iconName="user"
+            placeholder="Email"
+            onChangeText={onChange}
+            value={email}
+            onSubmitEditing={onSubmit}
+          />
+          <Button
+            className="mt-2"
+            isLoading={isPending}
+            onPress={onSubmit}
+            title="Sign In"
+          />
+          <View className="mx-auto flex-row mt-2">
+            <LoginWith icon="google" href="https://www.reddit.com/" />
+            <LoginWith icon="github" href="https://www.reddit.com/" />
+          </View>
+        </View>
       </View>
-      <Text className="text-center z-0 text-4xl mt-5 font-semibold mb-20">
-        Curxor
-      </Text>
-      <View className="space-y-10">
-        <Input
-          iconName="user"
-          placeholder="Email"
-          onChangeText={onChange}
-          value={email}
-        />
-        <Button onPress={onSubmit} title="Sign In" />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

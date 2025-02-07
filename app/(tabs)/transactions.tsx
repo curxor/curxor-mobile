@@ -5,14 +5,15 @@ import Button from "@/components/button/button";
 import { useGetTransactions } from "@/hooks/transaction.hook";
 
 const TransactionScreen = () => {
-  const { data, isLoading } = useGetTransactions();
+  const [params, setParams] = useState({ limit: 10, page: 1, search: "" });
+  const { data, isLoading } = useGetTransactions(params);
   return (
     <View className="bg-white h-full">
       <View className="bg-white p-4 flex-row">
         <Text className="font-semibold text-xl">History</Text>
       </View>
       {!isLoading &&
-        data.data.map((item: any) => (
+        data.data.transactions.map((item: any) => (
           <HistoryItem
             key={item._id}
             _id={item._id}

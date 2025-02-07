@@ -1,7 +1,14 @@
 import axiosInstance from "../services/axios";
 
-export const getTransactionsAPI = async () => {
-  const response = await axiosInstance.get("/category/transactions");
+export interface getTransactions {
+  limit: number;
+  page: number;
+  search: string | undefined;
+}
+export const getTransactionsAPI = async (getTransactions: getTransactions) => {
+  const response = await axiosInstance.get("/transaction", {
+    params: getTransactions,
+  });
   return response.data;
 };
 

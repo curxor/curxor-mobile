@@ -3,11 +3,16 @@ import Balance from "@/components/statictis/balance";
 import Total from "@/components/statictis/total";
 import { useGetProfile } from "@/hooks/auth.hook";
 import { useGetTransactions } from "@/hooks/transaction.hook";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { View, Text, ScrollView, SafeAreaView } from "react-native";
 
 const HomeScreen: React.FC = () => {
-  const { data, isLoading } = useGetTransactions();
+  const { data, isLoading } = useGetTransactions({
+    limit: 10,
+    page: 1,
+    search: "",
+  });
+  console.log(data);
   const { data: dataUser, isLoading: isLoadingUser } = useGetProfile();
   return (
     <ScrollView className="bg-white">
@@ -35,7 +40,7 @@ const HomeScreen: React.FC = () => {
         <View className="bg-white p-2 rounded-xl ">
           <Text className="font-semibold">Latest Entries</Text>
           {!isLoading &&
-            data.data.map((item: any) => (
+            data.data.transactions.map((item: any) => (
               <HistoryItem
                 key={item._id}
                 _id={item._id}
