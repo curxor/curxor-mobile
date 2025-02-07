@@ -20,7 +20,7 @@ const Index: React.FC = () => {
     enabled: !!token,
   });
   if (token === null) {
-    return null;
+    return <Redirect href={"/sign-in"} />;
   }
   if (!token || isError) {
     return <Redirect href={"/sign-in"} />;

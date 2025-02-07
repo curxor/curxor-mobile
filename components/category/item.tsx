@@ -1,18 +1,40 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+
 interface CategoryProps {
   name: string;
   icon: string;
 }
+
 const Category: React.FC<CategoryProps> = ({ name, icon }) => {
   return (
-    <View className="p-4 pt-2 w-fit">
-      <Text className="p-2 w-10 h-10 text-center mx-auto rounded-full flex-row items-center bg-gray-100  mr-2">
+    <View style={styles.container}>
+      <Text className="bg-gray-100" style={styles.icon}>
         {icon}
       </Text>
-      <Text className="font-semibold text-sm">{name} </Text>
+      <Text className="font-semibold">{name}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    width: "100%",
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  icon: {
+    padding: 10,
+    width: 40,
+    height: 40,
+    textAlign: "center",
+    borderRadius: 20,
+    backgroundColor: "#e0e0e0",
+    marginBottom: 5,
+  },
+});
 
 export default Category;

@@ -1,113 +1,3 @@
-// import Category from "@/components/category/item";
-// import { useGetCategories } from "@/hooks/category.hook";
-// import { useRouter } from "expo-router";
-// import React from "react";
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   Dimensions,
-//   TouchableOpacity,
-//   SafeAreaView,
-// } from "react-native";
-// import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-
-// const AddButton = () => {
-//   const router = useRouter();
-//   return (
-//     <TouchableOpacity onPress={() => router.push("/(pages)/add-category")}>
-//       <Text className="p-2 mt-2 w-10 h-10 text-center rounded-full bg-gray-100">
-//         {"+"}
-//       </Text>
-//     </TouchableOpacity>
-//   );
-// };
-// const initialLayout = { width: Dimensions.get("window").width };
-// const CategoriesScreen = () => {
-//   const { data, isLoading } = useGetCategories();
-
-//   const FirstRoute = () => (
-//     <View style={styles.tabContent}>
-//       {!isLoading &&
-//         data.data.map((item: any) => {
-//           return (
-//             item.type === "income" && (
-//               <Category name={item.name} icon={item.icon} key={item._id} />
-//             )
-//           );
-//         })}
-//       <AddButton />
-//     </View>
-//   );
-
-//   const SecondRoute = () => (
-//     <View style={styles.tabContent}>
-//       {!isLoading &&
-//         data.data.map((item: any) => {
-//           return (
-//             item.type === "expense" && (
-//               <Category name={item.name} icon={item.icon} key={item._id} />
-//             )
-//           );
-//         })}
-//       <AddButton />
-//     </View>
-//   );
-
-//   const [index, setIndex] = React.useState(0);
-//   const [routes] = React.useState([
-//     { key: "income", title: "Income" },
-//     { key: "expense", title: "Expense" },
-//   ]);
-
-//   const renderScene = ({ route }: { route: any }) => {
-//     if (isLoading) {
-//       return <Text>Loading...</Text>;
-//     }
-
-//     return (
-//       <View style={styles.tabContent}>
-//         {data?.data
-//           .filter((item: any) => item.type === route.key)
-//           .map((item: any) => (
-//             <Category name={item.name} icon={item.icon} key={item._id} />
-//           ))}
-//         <AddButton />
-//       </View>
-//     );
-//   };
-
-//   return (
-//     <SafeAreaView style={{ flex: 1 }}>
-//       <TabView
-//         navigationState={{ index, routes }}
-//         renderScene={renderScene}
-//         onIndexChange={setIndex}
-//         initialLayout={initialLayout}
-//         renderTabBar={(props) => (
-//           <TabBar
-//             {...props}
-//             indicatorStyle={{ backgroundColor: "#00A6ED" }}
-//             style={{ backgroundColor: "#00A6ED" }}
-//           />
-//         )}
-//       />
-//     </SafeAreaView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   tabContent: {
-//     backgroundColor: "white",
-//     flexDirection: "row",
-//     flexWrap: "wrap",
-//     padding: 10,
-//     justifyContent: "flex-start",
-//     alignItems: "flex-start",
-//   },
-// });
-
-// export default CategoriesScreen;
 import React from "react";
 import {
   View,
@@ -116,13 +6,15 @@ import {
   Dimensions,
   SafeAreaView,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { useRouter } from "expo-router";
 import { useGetCategories } from "@/hooks/category.hook";
 import Category from "@/components/category/item";
-
+import { FlatGrid } from "react-native-super-grid";
 const initialLayout = { width: Dimensions.get("window").width };
+const numColumns = Math.floor(Dimensions.get("window").width / 150);
 
 const CategoriesScreen = () => {
   const router = useRouter();
@@ -138,18 +30,30 @@ const CategoriesScreen = () => {
       return <Text>Loading...</Text>;
     }
 
-    const filteredData = data?.data.filter(
-      (item: any) => item.type === route.key
-    );
+    const filteredData =
+      data?.data.filter((item: any) => item.type === route.key) || [];
+    const dataWithAddButton = [...filteredData, { _id: "add-button" }];
 
     return (
       <View style={styles.tabContent}>
-        {filteredData.map((item: any) => (
-          <Category name={item.name} icon={item.icon} key={item._id} />
-        ))}
-        <TouchableOpacity onPress={() => router.push("/(pages)/add-category")}>
-          <Text style={styles.addButton}>{"+"}</Text>
-        </TouchableOpacity>
+        <FlatGrid
+          itemDimension={130}
+          data={dataWithAddButton}
+          renderItem={({ item }) =>
+            item._id === "add-button" ? (
+              <TouchableOpacity
+                onPress={() => router.push("/(pages)/add-category")}
+                className="rounded-full p-2 bg-gray-100 w-10 h-10 flex-row justify-center items-center"
+              >
+                <Text style={styles.addButton}>{"+"}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.itemContainer}>
+                <Category name={item.name} icon={item.icon} key={item._id} />
+              </View>
+            )
+          }
+        />
       </View>
     );
   };
@@ -180,11 +84,7 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     backgroundColor: "white",
-    flexDirection: "row",
-    flexWrap: "wrap",
     padding: 10,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
   },
   tabBar: {
     backgroundColor: "#00A6ED",
@@ -196,15 +96,24 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "bold",
   },
-  addButton: {
-    padding: 8,
-    marginTop: 8,
-    width: 40,
-    height: 40,
-    textAlign: "center",
-    borderRadius: 20,
+  itemContainer: {
+    flex: 1,
+    margin: 5,
+    maxWidth: Dimensions.get("window").width / numColumns - 10, // Adjust width based on screen size and margin
+  },
+  addButtonContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    margin: 5,
+    maxWidth: Dimensions.get("window").width / numColumns - 10, // Adjust width based on screen size and margin
     backgroundColor: "#f0f0f0",
-    alignSelf: "center",
+    borderRadius: 8,
+    padding: 8,
+  },
+  addButton: {
+    fontSize: 24,
+    color: "#00A6ED",
   },
 });
 

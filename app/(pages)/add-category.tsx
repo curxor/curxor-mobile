@@ -6,8 +6,11 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+
 const AddCategory: React.FC = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutate } = useCreateCategory();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<ICategory>({
@@ -18,98 +21,65 @@ const AddCategory: React.FC = () => {
   });
   const [type, setType] = useState<string>("");
   const [items, setItems] = useState([
-    { name: "Expense", type: "expense" },
-    { name: "Income", type: "income" },
+    { label: "Expense", value: "expense" },
+    { label: "Income", value: "income" },
   ]);
 
-  const onSubmit = () => {
-    mutate(
-      { ...data, type },
-      {
-        onSuccess: () => {
-          router.back();
-        },
-      }
-    );
+  const handleCreateCategory = () => {
+    mutate(data, {
+      onSuccess: (newCategory) => {
+        queryClient.setQueryData(["categories"], (oldData: any) => {
+          return {
+            ...oldData,
+            data: [...oldData.data, newCategory.data],
+          };
+        });
+        router.back();
+      },
+    });
   };
+
   return (
-    <View className="h-full bg-white">
+    <View className="bg-white" style={styles.container}>
       <Input
-        title="Name"
-        className="mx-2 "
+        placeholder="Name"
         value={data.name}
-        onChangeText={(value) => {
-          setData((prevData) => ({
-            ...prevData,
-            name: value,
-          }));
-        }}
-      ></Input>
+        onChangeText={(text) => setData({ ...data, name: text })}
+      />
       <Input
-        title="Description"
-        className="mx-2 "
+        placeholder="Description"
         value={data.description}
-        onChangeText={(value) => {
-          setData((prevData) => ({
-            ...prevData,
-            description: value,
-          }));
-        }}
-      ></Input>{" "}
+        onChangeText={(text) => setData({ ...data, description: text })}
+      />
       <Input
-        length={100}
-        title="Icon"
-        className="mx-2 "
+        placeholder="Icon"
         value={data.icon}
-        onChangeText={(value) => {
-          setData((prevData) => ({
-            ...prevData,
-            icon: value,
-          }));
-        }}
-      ></Input>
-      <View className="mx-2 z-10">
-        <Text className="mb-2">Category</Text>
+        onChangeText={(text) => setData({ ...data, icon: text })}
+      />
+      <View className="my-2 z-10">
         <DropDownPicker
           open={open}
           value={type}
-          items={items.map((item) => ({
-            label: item.name,
-            value: item.type,
-          }))}
+          items={items}
           setOpen={setOpen}
           setValue={setType}
           setItems={setItems}
-          searchable={true}
-          placeholder="Select a category"
-          searchPlaceholder="Search categories..."
-          style={styles.dropdown}
-          dropDownContainerStyle={styles.dropdownContainer}
+          onChangeValue={(value) => {
+            if (value !== null) {
+              setData({ ...data, type: value });
+            }
+          }}
         />
       </View>
-      <Button className="mt-2" title="Add" onPress={() => onSubmit()}></Button>
+      <Button title="Create Category" onPress={handleCreateCategory} />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 10,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  dropdown: {
-    borderColor: "#aaa",
-    borderRadius: 10,
-  },
-  dropdownContainer: {
-    borderColor: "#aaa",
+    padding: 16,
   },
 });
 

@@ -10,7 +10,6 @@ const TransactionScreen = () => {
     <View className="bg-white h-full">
       <View className="bg-white p-4 flex-row">
         <Text className="font-semibold text-xl">History</Text>
-        <Button className="ml-auto w-fit h-fit" title="+"></Button>
       </View>
       {!isLoading &&
         data.data.map((item: any) => (
