@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
 import HistoryItem from "@/components/history/item";
-import Button from "@/components/button/button";
 import { useGetTransactions } from "@/hooks/transaction.hook";
-
 const TransactionScreen = () => {
   const [params, setParams] = useState({ limit: 10, page: 1, search: "" });
   const { data, isLoading } = useGetTransactions(params);
@@ -19,9 +17,9 @@ const TransactionScreen = () => {
             _id={item._id}
             amount={item.amount}
             createdAt={item.createdAt}
-            type={item.category.name}
+            type={item.category?.name}
             description={item.description}
-            icon={item.category.icon}
+            icon={item.category?.icon}
           ></HistoryItem>
         ))}
     </View>

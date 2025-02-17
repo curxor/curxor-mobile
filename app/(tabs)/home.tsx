@@ -46,9 +46,9 @@ const HomeScreen: React.FC = () => {
                 _id={item._id}
                 amount={item.amount}
                 createdAt={item.createdAt}
-                type={item.category.name}
+                type={item.category?.name}
                 description={item.description}
-                icon={item.category.icon}
+                icon={item.category?.icon}
               ></HistoryItem>
             ))}
         </View>

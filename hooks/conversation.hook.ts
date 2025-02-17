@@ -1,6 +1,5 @@
-import { getMessagesAPI, sendMessageAPI } from "@/apis/conversation.api";
+import { getMessagesAPI, sendMessageAPI } from "../apis/conversation.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { IMessage } from "react-native-gifted-chat";
 
 export const useGetMessages = () => {
   return useQuery({
@@ -10,16 +9,13 @@ export const useGetMessages = () => {
 };
 export const useSendMessage = () => {
   return useMutation({
-    mutationFn: ({
-      text,
-      conversationId,
-      botId,
-    }: {
+    mutationFn: (data: {
       text: string;
       conversationId: string;
       botId: string;
+      file: any;
     }) => {
-      return sendMessageAPI(text, conversationId, botId);
+      return sendMessageAPI(data);
     },
     mutationKey: ["send-msg"],
   });

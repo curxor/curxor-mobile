@@ -15,10 +15,10 @@ interface TransactionProps {
 }
 const Transaction: React.FC<TransactionProps> = ({
   amount,
-  icon,
+  icon = "❓",
   description,
   createdAt,
-  type,
+  type = "Undefined",
   _id,
   className,
 }) => {

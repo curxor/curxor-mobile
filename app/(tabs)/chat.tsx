@@ -1,13 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { GiftedChat, IMessage, Send, Message } from "react-native-gifted-chat";
-import { launchImageLibrary } from "react-native-image-picker";
+import * as ImagePicker from "expo-image-picker";
 import AudioRecorderPlayer from "react-native-audio-recorder-player";
 import { Image, TouchableOpacity, View, Text } from "react-native";
 import { useGetMessages, useSendMessage } from "@/hooks/conversation.hook";
-import { formatCurrency } from "@/utils/format-currency";
 import Transaction from "@/components/history/item";
-import ScanScreen from "@/components/button/send-image-with-ocr";
 import { useGetProfile } from "@/hooks/auth.hook";
+import { uriToBlob } from "@/utils/uri-to-blob";
 
 const renderSend = (props: any) => (
   <Send {...props}>
@@ -88,6 +87,7 @@ const ChatScreen: React.FC = () => {
           text: userMessage,
           conversationId: currentConversationId,
           botId: botUserID,
+          file: null,
         },
         {
           onSuccess: (data) => {
@@ -109,24 +109,52 @@ const ChatScreen: React.FC = () => {
     [conversationId]
   );
 
-  const onSendImage = () => {
-    launchImageLibrary(
-      { mediaType: "photo", includeBase64: false },
-      (response) => {
-        if (response.assets?.[0]?.uri) {
-          const imageMessage: ICustomMessage = {
-            _id: Math.random().toString(),
-            text: "",
-            createdAt: new Date(),
-            user: { _id: currentUserID, name: "Bạn" },
-            image: response.assets[0]?.uri,
-          };
-          setMessages((prevMessages) =>
-            GiftedChat.append(prevMessages, [imageMessage])
-          );
+  const onSendImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const file = await uriToBlob(result.assets[0].uri);
+
+      setIsBotTyping(true);
+      const currentConversationId = conversationId;
+      mutate(
+        {
+          text: "",
+          conversationId: currentConversationId,
+          botId: botUserID,
+          file: file,
+        },
+        {
+          onSuccess: (data) => {
+            const replyMessage: ICustomMessage = {
+              _id: Math.random().toString(),
+              text: data.text || "Bot response",
+              createdAt: new Date(),
+              user: { _id: botUserID, name: "Bot" },
+              transaction: data.transactions,
+            };
+            setMessages((prevMessages) =>
+              GiftedChat.append(prevMessages, [replyMessage])
+            );
+          },
+          onSettled: () => setIsBotTyping(false),
         }
-      }
-    );
+      );
+      const imageMessage: ICustomMessage = {
+        _id: Math.random().toString(),
+        text: "",
+        createdAt: new Date(),
+        user: { _id: currentUserID, name: "Bạn" },
+        image: result.assets[0].uri,
+      };
+      setMessages((prevMessages) =>
+        GiftedChat.append(prevMessages, [imageMessage])
+      );
+    }
   };
 
   return (
