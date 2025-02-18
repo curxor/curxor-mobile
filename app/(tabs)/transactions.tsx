@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useRef, useState } from "react";
+import { View, Text, ScrollView } from "react-native";
 import HistoryItem from "@/components/history/item";
 import { useGetTransactions } from "@/hooks/transaction.hook";
 const TransactionScreen = () => {
   const [params, setParams] = useState({ limit: 10, page: 1, search: "" });
+  const observer = useRef<IntersectionObserver>();
   const { data, isLoading } = useGetTransactions(params);
   return (
-    <View className="bg-white h-full">
+    <ScrollView className="bg-white h-full">
       <View className="bg-white p-4 flex-row">
         <Text className="font-semibold text-xl">History</Text>
       </View>
@@ -22,7 +23,7 @@ const TransactionScreen = () => {
             icon={item.category?.icon}
           ></HistoryItem>
         ))}
-    </View>
+    </ScrollView>
   );
 };
 

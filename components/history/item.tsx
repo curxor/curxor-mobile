@@ -27,7 +27,7 @@ const Transaction: React.FC<TransactionProps> = ({
   return (
     <TouchableOpacity
       onPress={() =>
-        router.push({ pathname: "/(pages)/transactions", params: { _id } })
+        router.push({ pathname: "/(pages)/transaction", params: { _id } })
       }
     >
       <View
