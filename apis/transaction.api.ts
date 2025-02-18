@@ -28,3 +28,7 @@ export const editTransactionAPI = async (transaction: ITransaction) => {
   const response = await axiosInstance.put("/transaction", transaction);
   return response.data;
 };
+export const deleteTransactionAPI = async (id: string) => {
+  const response = await axiosInstance.delete(`/transaction/${id}`);
+  return response.data;
+};

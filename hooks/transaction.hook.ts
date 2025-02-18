@@ -1,4 +1,5 @@
 import {
+  deleteTransactionAPI,
   editTransactionAPI,
   getTransactionDetailsAPI,
   getTransactions,
@@ -25,5 +26,13 @@ export const useEditTransaction = () => {
       return editTransactionAPI(transaction);
     },
     mutationKey: ["edit-transactions"],
+  });
+};
+export const useDeleteTransaction = () => {
+  return useMutation({
+    mutationFn: (id: string) => {
+      return deleteTransactionAPI(id);
+    },
+    mutationKey: ["delete-transactions"],
   });
 };

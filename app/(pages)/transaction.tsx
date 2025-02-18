@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Modal } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Input from "@/components/input/input";
 import Button from "@/components/button/button";
@@ -8,10 +8,13 @@ import { useGetCategories } from "@/hooks/category.hook";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
 import {
+  useDeleteTransaction,
   useEditTransaction,
   useTransactionDetails,
 } from "@/hooks/transaction.hook";
 import Header from "@/components/header/header";
+import IconButton from "@/components/button/icon-button";
+import { useQueryClient } from "@tanstack/react-query";
 
 const transactionSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -34,23 +37,29 @@ interface ICategory {
 
 export default function Transactions() {
   const router = useRouter();
-  const { _id } = useLocalSearchParams<{ _id: string }>();
-  const { data: dataTransaction } = useTransactionDetails(_id);
-  const { data: dataCategories, isLoading } = useGetCategories();
-  const { mutate, isPending } = useEditTransaction();
+  const queryClient = useQueryClient();
+  const [isModalVisible, setModalVisible] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
   const [icon, setIcon] = useState<string>("");
-
   const [data, setData] = useState<ITransaction>({
     description: "",
     amount: 0,
     category: "",
   });
+  const { _id } = useLocalSearchParams<{ _id: string }>();
+  const { data: dataTransaction } = useTransactionDetails(_id);
+  const { data: dataCategories, isLoading } = useGetCategories();
+  const { mutate, isPending } = useEditTransaction();
+  const { mutate: delMutate, isPending: isDelPending } = useDeleteTransaction();
+
   const [category, setCategory] = useState<string>("");
   const [items, setItems] = useState<ICategory[]>([
     { _id: "", name: "", type: "" },
   ]);
 
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
   useEffect(() => {
     if (dataCategories && dataTransaction) {
       setItems(dataCategories.data);
@@ -109,22 +118,36 @@ export default function Transactions() {
           });
         },
         onSuccess: (data: any) => {
-          Toast.show({
-            type: "error",
-            text1: data.message,
-            position: "top",
-            visibilityTime: 3000,
-          });
-          router.back();
+          router.replace("/(tabs)/home");
         },
       }
     );
   };
-
+  const deleteTransaction = () => {
+    console.log("first");
+    delMutate(_id, {
+      onSuccess: () => {
+        router.replace("/(tabs)/home");
+      },
+      onError: (err: any) => {
+        return Toast.show({
+          type: "error",
+          text1: err.response.data.message,
+          position: "top",
+          visibilityTime: 3000,
+        });
+      },
+    });
+  };
   return (
     <View className="bg-white h-full">
       <View className="max-w-[500px] w-full mx-auto">
-        <Header title="Transaction"></Header>
+        <Header
+          children={
+            <IconButton color="red" icon="trash-2" onPress={toggleModal} />
+          }
+          title="Transaction"
+        ></Header>
 
         <View className="text-center mt-5 flex-row items-center bg-gray-100 text-8xl h-36 w-36 mx-auto rounded-full p-2">
           <Text className="text-6xl mx-auto">🔥</Text>
@@ -184,6 +207,31 @@ export default function Transactions() {
           />
         </View>
       </View>
+      <Modal visible={isModalVisible}>
+        <View className="mx-auto mt-20 flex-1 w-[30%]">
+          <Text className="text-center">
+            Are you sure you want to delete this transaction?
+          </Text>
+          <Text className="font-semibold mx-auto mt-10">
+            {data?.description}
+          </Text>
+
+          <View className="flex-row mt-5 justify-between">
+            <Button
+              className="w-fit mx-auto "
+              isLoading={false}
+              title="Cancel"
+              onPress={toggleModal}
+            />
+            <Button
+              className="w-fit mx-auto bg-red-400 text-white"
+              isLoading={isDelPending}
+              title="Delete"
+              onPress={deleteTransaction}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
